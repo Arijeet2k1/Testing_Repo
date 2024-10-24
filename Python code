@@ -1,0 +1,28 @@
+def flatten_dict(nested_dict: Dict, sep: str = '.') -> Dict:
+    """
+    Flattens a nested dictionary into a single-level dictionary with dot notation for keys.
+    
+    :param nested_dict: The dictionary object to flatten
+    :param sep: The separator to use between parent and child keys (defaults to '.')
+    :return: A flattened dictionary
+    """
+    def _flatten(current, parent_key=''):
+        items = {}
+        for k, v in current.items():
+            new_key = f"{parent_key}{sep}{k}" if parent_key else k
+            
+            if isinstance(v, Dict):
+                items.update(_flatten(v, new_key))
+            elif isinstance(v, list):
+                for i, item in enumerate(v):
+                    if isinstance(item, Dict):
+                        items.update(_flatten(item, f"{new_key}[{i}]"))
+                    else:
+                        items[f"{new_key}[{i}]"] = item
+            else:
+                items[new_key] = v
+        return items
+
+    dict = _flatten(nested_dict)
+    
+    return dict
